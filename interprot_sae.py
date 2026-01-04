@@ -23,6 +23,18 @@ def load_models(layer: int):
     sae_model.eval()
     return esm_model, sae_model
 
+def load_sae(layer: int):
+    # Load SAE model
+    checkpoint_path = hf_hub_download(
+        repo_id="liambai/InterProt-ESM2-SAEs",
+        filename=f"esm2_plm{ESM_DIM}_l{layer}_sae{SAE_DIM}.safetensors"
+    )
+    sae_model = SparseAutoencoder(ESM_DIM, SAE_DIM)
+    sae_model.load_state_dict(load_file(checkpoint_path))
+    sae_model.to(DEVICE)
+    sae_model.eval()
+    return sae_model
+
 
 def get_latents(seqs: List[str], layer: int, esm_model: EsmModel, sae_model: SparseAutoencoder):
     # Tokenize sequence and run ESM inference

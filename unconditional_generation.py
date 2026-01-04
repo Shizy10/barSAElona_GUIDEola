@@ -48,12 +48,12 @@ def tokenize(proseq, alphabet):
     return seq_SP
 
 
-def random_mask(seq_SP, percent, alphabet):
+def random_mask(seq_SP, percent, mask_id):
     n = seq_SP.size(1) - 2
     perm_unmasked_positions = torch.randperm(n) + 1
     n_to_mask = int(n * percent)
     pos_to_mask = perm_unmasked_positions[:n_to_mask]
-    seq_SP[:, pos_to_mask] = alphabet.mask_idx
+    seq_SP[:, pos_to_mask] = mask_id
     return seq_SP
 
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     model.eval()
 
     seq_SP = tokenize(proseq, alphabet)
-    input_seq_SP = random_mask(seq_SP, percent, alphabet)
+    input_seq_SP = random_mask(seq_SP, percent, alphabet.mask_idx)
 
     output_seq_SP = unconditional_redesign(input_seq_SP, alphabet, model)
     redesigned_proseq = decode(output_seq_SP, alphabet)
