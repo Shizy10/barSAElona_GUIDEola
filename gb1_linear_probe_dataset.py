@@ -9,11 +9,17 @@ ds = load_dataset("SaProtHub/Dataset-GB1-fitness")["train"]
 
 esm_mod, sae_mod = load_models(LAYER)
 
-def add_latent(rows):
+def add_latent_batched(rows):
     seqs = rows["protein"]
-    rows["latents"] = get_latents(seqs, LAYER, esm_mod, sae_mod)
+    latents_SPZ = get_latents(seqs, LAYER, esm_mod, sae_mod)
+    latents_SZ = latents_SPZ.mean(dim=1)
+    rows["latents"] = latents_SZ
     return rows
-new_ds = ds.map(add_latent, batched=True)
 
-dataset_file_path = linear_probe_dataset_path("gb1", LAYER, "sae")
-new_ds.save_to_disk(dataset_file_path)
+new_ds = ds.map(add_latent_batched, batched=True)
+new_ds.set_format("numpy", columns=["latents", "label"])
+
+
+new_ds.save_to_disk("test.hf")
+new_ds = load_from_disk("test.hf")
+
