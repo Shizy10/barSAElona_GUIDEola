@@ -26,6 +26,7 @@ def load_models(layer: int):
 def get_latents(seq: str, layer: int, esm_model: EsmModel, sae_model: SparseAutoencoder):
     # Tokenize sequence and run ESM inference
     tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D")
+    # tokenizer = esm_model.tokenizer
     inputs = tokenizer(seq, padding=True, return_tensors="pt").to(DEVICE)
     with torch.no_grad():
         outputs = esm_model(**inputs, output_hidden_states=True)
@@ -37,8 +38,4 @@ def get_latents(seq: str, layer: int, esm_model: EsmModel, sae_model: SparseAuto
     sae_acts_PZ = sae_model.get_acts(esm_layer_acts_PA) # (L+2, SAE_DIM)
     return sae_acts_PZ
 
-LAYER = 24
-seq = "TTCCPSIVARSNFNVCRLPGTPEALCATYTGCIIIPGATCPGDYAN"
-esm_mod, sae_mod = load_models(LAYER)
-latents_PZ = get_latents(seq, LAYER, esm_mod, sae_mod)
-print(latents_PZ)
+# def get_latents_batched()
