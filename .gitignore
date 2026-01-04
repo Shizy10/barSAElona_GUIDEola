@@ -208,3 +208,7 @@ __marimo__/
 
 # VSCode
 .vscode/
+
+# for HF datasets
+*.arrow
+*.json

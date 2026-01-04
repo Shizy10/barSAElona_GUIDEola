@@ -4,6 +4,7 @@ from safetensors.torch import load_file
 from interprot.sae_model import SparseAutoencoder
 from huggingface_hub import hf_hub_download
 from constants import DEVICE, ESM_DIM, SAE_DIM
+from typing import List
 
 def load_models(layer: int):
     # Load ESM model
@@ -23,19 +24,19 @@ def load_models(layer: int):
     return esm_model, sae_model
 
 
-def get_latents(seq: str, layer: int, esm_model: EsmModel, sae_model: SparseAutoencoder):
+def get_latents(seqs: List[str], layer: int, esm_model: EsmModel, sae_model: SparseAutoencoder):
     # Tokenize sequence and run ESM inference
     tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D")
     # tokenizer = esm_model.tokenizer
-    inputs = tokenizer(seq, padding=True, return_tensors="pt").to(DEVICE)
+    inputs_SP = tokenizer(seqs, padding=True, return_tensors="pt").to(DEVICE)
     with torch.no_grad():
-        outputs = esm_model(**inputs, output_hidden_states=True)
+        outputs = esm_model(**inputs_SP, output_hidden_states=True)
 
     # esm_layer_acts has shape (L+2, ESM_DIM), +2 for BoS and EoS tokens
-    esm_layer_acts_PA = outputs.hidden_states[layer][0]
+    esm_layer_acts_SPA = outputs.hidden_states[layer]
 
     # Using ESM embeddings from LAYER, run SAE inference
-    sae_acts_PZ = sae_model.get_acts(esm_layer_acts_PA) # (L+2, SAE_DIM)
-    return sae_acts_PZ
+    sae_acts_SPZ = sae_model.get_acts(esm_layer_acts_SPA) # (L+2, SAE_DIM)
+    return sae_acts_SPZ
 
 # def get_latents_batched()
