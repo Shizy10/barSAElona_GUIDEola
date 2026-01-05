@@ -20,6 +20,4 @@ new_ds = ds.map(add_latent_batched, batched=True)
 new_ds.set_format("numpy", columns=["latents", "label"])
 
 
-new_ds.save_to_disk("test.hf")
-new_ds = load_from_disk("test.hf")
-
+new_ds.save_to_disk(linear_probe_dataset_path("gb1", LAYER, "sae"))

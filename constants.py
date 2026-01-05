@@ -1,6 +1,8 @@
 from pathlib import Path
 import torch
 
+GB1_masked = "MTYKLILNGKTLKGETTTEAVDAATAEKVFKQYANDNG<mask><mask><mask>EWTYDDATKTFT<mask>TE"
+
 EMBEDDING_TYPES = ["sae", "emb"] 
 
 def linear_probe_weights(protein_name, layer_num, embedding_type):
