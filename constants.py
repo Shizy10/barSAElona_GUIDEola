@@ -20,6 +20,9 @@ def linear_probe_dataset_path(protein_name, layer_num, embedding_type, filetype=
         raise NotImplementedError(f"embedding_type must be one of {EMBEDDING_TYPES}")
     return DATA_FOLDER / f"{protein_name}_l{layer_num}_{embedding_type}_act.{filetype}"
 
+def output_seq_file_path(protein_name, model_type, layer_num=None):
+    return DATA_FOLDER / f"{protein_name}_{model_type}_seqs.pkl"
+
 SWISSPROT_FASTA_FILE = Path("/data/ishan/barSAElona_GUIDEola/uniprot_sprot.fasta")
 
 ESM_DIM = 1280
